@@ -1,7 +1,7 @@
 <div>
   <p align="center">
     <a href="https://platform.composio.dev/?utm_source=Github&utm_medium=Youtube&utm_campaign=2025-11&utm_content=AwesomeSkills">
-    <img width="1280" height="640" alt="Composio banner" src="assets/awesome-agent-skills.png">
+    <img width="1280" height="640" alt="Composio banner" src="assets/media/awesome-agent-skills.png">
     </a>
   </p>
 </div>
@@ -32,15 +32,23 @@ This project is dedicated to collecting and sharing the finest Skills tutorials,
 
 ## Quick Start
 
-Agent Skills is an [open standard](https://agentskills.io/home) maintained by Anthropic. By defining task-specific execution specifications, it enables convenient transformation of personal experience into AI Skills, allowing rapid construction of lightweight Personal Agents.
+Agent Skills is an [open standard](https://agentskills.io/home) maintained by Anthropic, designed to teach AI how to handle specific tasks and workflows.
+
+It is one of the most powerful ways to customize AI for your specific needs. When you need to execute repeatable workflows, you no longer need to explain your preferences, processes, and domain knowledge in every conversation with AI. Skills let you teach the AI once and benefit every time.
+
+Skills work seamlessly with AI's built-in capabilities (such as code execution and document creation). For users building and using MCP, it also provides another powerful layer of functionality — helping AI transform external tool access into reliable, optimized workflows.
 
 This standard has been adopted by leading AI companies including Anthropic, OpenAI, Google, Microsoft, and Cursor, quickly becoming standard in mainstream AI tools.
 
 According to the standard, each Skill is a standardized named folder that combines Markdown documents, executable scripts, and other material files.
 
-![](assets/skills-sketch.png)
+![](assets/media/skills-sketch.png)
 
 ## Tutorial Collection
+
+### Official Guide
+
+-   [@Anthropic: Complete Guide to Building Claude Skills (Chinese)](assets/docs/Claude-Skills-完全构建指南.md)
 
 ### Graphic Tutorials
 
@@ -56,9 +64,11 @@ According to the standard, each Skill is a standardized named folder that combin
 
 ## Skills Marketplace
 
-[![skillsmp](assets/skillsmp.png)](https://skillsmp.com/zh)
+[![](assets/media/skills_sh.png)](https://skills.sh/)
 
 It is recommended to use Vercel's [skills.sh](https://skills.sh/) leaderboard, which provides an intuitive view of the most popular Skills repositories and individual Skill usage.
+
+[![skillsmp](assets/media/skills_smp.png)](https://skillsmp.com/zh)
 
 Additionally, you can use the [skillsmp](https://skillsmp.com/zh) marketplace, which automatically indexes all Skills projects on GitHub and organizes them by category, update time, star count, and other tags.
 
@@ -79,7 +89,7 @@ An increasing number of programming tools and conversational tools are now suppo
 
 To install Agent Skills in programming tools, simply place the Skill folder in the appropriate path.
 
-It is recommended to use Vercel's official `npx skills add <owner/repo>` CLI tool for quick installation. For parameters, see [npmjs/skills](https://www.npmjs.com/package/skills).
+It is recommended to use Vercel's official `npx skills find <query>` / `npx skills add <owner/repo>` CLI tool for quick discovery and installation. For parameters, see [npmjs/skills](https://www.npmjs.com/package/skills).
 
 
 | Tool               | Project Path         | Global Path                     | Documentation                                                                               |
@@ -115,7 +125,6 @@ As the Agent Skills standard becomes more widespread, an increasing number of co
 ### Skill Creation
 
 -   [anthropics/skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator): Official meta-skill from Anthropic for creating skills, enabling rapid creation of personal custom skills
--   [yusufkaraaslan/Skill_Seekers](https://github.com/yusufkaraaslan/Skill_Seekers): Automated conversion of documentation sites, GitHub repos, and PDFs into Agent Skills
 
 ### Document Processing
 
@@ -129,17 +138,26 @@ As the Agent Skills standard becomes more widespread, an increasing number of co
 -   [anthropics/skills](https://github.com/anthropics/skills): Skills collection from Anthropic
 -   [better-auth/skills](https://github.com/better-auth/skills): Authentication tools Skills collection from Better Auth
 -   [black-forest-labs/skills](https://github.com/black-forest-labs/skills): Skills collection for controlling FLUX models from Black Forest Labs
+-   [browser-use/browser-use](https://github.com/browser-use/browser-use/tree/main/skills): Browser automation Skills collection from Browser Use
+-   [cloudflare/skills](https://github.com/cloudflare/skills): API integration Skills collection from Cloudflare
+-   [ClickHouse/agent-skills](https://github.com/ClickHouse/agent-skills): Database query and analytics Skills collection from ClickHouse
 -   [expo/skills](https://github.com/expo/skills): React Native Skills collection from Expo
+-   [firecrawl/cli](https://github.com/firecrawl/cli): CLI tool Skills from Firecrawl
+-   [google-gemini/gemini-skills](https://github.com/google-gemini/gemini-skills): API/SDK Skills collection from Google Gemini
 -   [huggingface/skills](https://github.com/huggingface/skills): Skills for training large models from HuggingFace
 -   [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills): Skills collection for enhancing Obsidian functionality from Obsidian CEO
 -   [langgenius/dify](https://github.com/langgenius/dify/tree/main/.claude/skills): Multi-functional Skills collection from Dify
 -   [microsoft/agent-skills](https://github.com/microsoft/agent-skills): Agent Skills collection for Azure services from Microsoft
+-   [openai/skills](https://github.com/openai/skills): Official Skills collection from OpenAI
 -   [remotion-dev/skills](https://github.com/remotion-dev/skills): Create video content using Remotion
+-   [replicate/skills](https://github.com/replicate/skills): AI model invocation Skills collection from Replicate
+-   [slidevjs/slidev](https://github.com/slidevjs/slidev/tree/main/skills/slidev): Presentation creation Skills collection from Slidev
 -   [google-labs-code/stitch-skills](https://github.com/google-labs-code/stitch-skills): Stitch Skills collection from Google Labs
 -   [stripe/ai](https://github.com/stripe/ai): Financial payment related Skills collection from Stripe
 -   [sanity-io/agent-toolkit](https://github.com/sanity-io/agent-toolkit/tree/main/skills): Content management platform Skills collection from Sanity
 -   [supabase/agent-skills](https://github.com/supabase/agent-skills): PostgreSQL best practices from Supabase
--   [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills): React Skills collection from Vercel
+-   [WordPress/agent-skills](https://github.com/WordPress/agent-skills): Content management platform Skills collection from WordPress
+-   [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills): React/Next.js Skills collection from Vercel
 
 
 ### Content Creation
@@ -170,6 +188,7 @@ As the Agent Skills standard becomes more widespread, an increasing number of co
 
 ## Supporting Tools
 
+-   [yusufkaraaslan/Skill_Seekers](https://github.com/yusufkaraaslan/Skill_Seekers): Automated scraping of documentation sites, GitHub repositories, and PDF files for conversion into Agent Skills
 -   [context7 cli](https://context7.com/docs/skills#skills): Manage and use Agent Skills with context7 cli command-line tool
 -   [openskills](https://github.com/numman-ali/openskills): Global Skills loading tool supporting multiple Agent platforms
 -   [skild.sh](https://skild.sh/): CLI tool for installing, managing, and syncing Skills across multiple tools
@@ -192,7 +211,7 @@ Anthropic provides extensive Agent Skills tutorials in their official blog. The 
 
 ## Acknowledgments
 
-![](assets/talk_is_cheap.jpg)
+![](assets/media/talk_is_cheap.jpg)
 
 ## Project History
 
