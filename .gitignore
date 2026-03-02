@@ -1,0 +1,21 @@
+# User-specific Claude Code files
+.claude/*.local.md
+.claude/memory/
+.claude/worktrees/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
