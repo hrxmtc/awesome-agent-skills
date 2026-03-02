@@ -47,3 +47,53 @@
 ### 许可证
 
 本 plugin 基于官方 skill-creator 修改，遵循 Apache 2.0 许可证。
+
+---
+
+## tldraw Helper
+
+**tldraw Helper** 通过 tldraw Desktop 的 Local Canvas API 进行编程式绘图，轻松创建流程图、架构图、思维导图等各种可视化内容。
+
+### 功能特性
+
+- 📚 **完整的 API 文档**：详细的 tldraw Canvas API 使用指南
+- ⚡ **4 个快捷命令**：快速创建图表、截图、列表、清空
+- 🤖 **自动化绘图 Agent**：支持创建复杂图表
+- 🎨 **14+ 种图形类型**：矩形、圆形、箭头、文本等
+- 🎯 **7+ 种图表类型**：流程图、架构图、思维导图等
+
+### 使用方法
+
+**前提条件：**
+- 安装并运行 tldraw Desktop
+- 创建一个新文档 (Cmd+N / Ctrl+N)
+
+**快捷命令：**
+```bash
+/tldraw:draw flowchart user authentication    # 创建流程图
+/tldraw:draw architecture microservices      # 创建架构图
+/tldraw:screenshot large                     # 截图保存
+/tldraw:list                                 # 列出所有图形
+/tldraw:clear                                # 清空画布
+```
+
+**或者直接描述：**
+```
+帮我画一个用户登录流程的流程图
+创建一个微服务架构图
+```
+
+### 支持的图表类型
+
+- **流程图** (Flowchart) - 业务流程、算法流程
+- **架构图** (Architecture) - 系统架构、微服务架构
+- **思维导图** (Mind Map) - 头脑风暴、概念整理
+- **时序图** (Sequence) - 交互流程、API 调用
+- **ER 图** (Entity-Relationship) - 数据库设计
+- **网络拓扑** (Network Topology) - 网络架构
+- **时间线** (Timeline) - 项目规划、历史事件
+
+### 详细文档
+
+查看 [tldraw-helper README](./tldraw-helper/README.md) 了解更多信息。
+

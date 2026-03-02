@@ -34,6 +34,19 @@
 			"homepage": "https://github.com/libukai/awesome-agent-skills",
 			"category": "development",
 			"tags": ["vscode", "extensions", "api-testing", "deployment"]
+		},
+		{
+			"name": "tldraw-helper",
+			"source": "./plugins/tldraw-helper",
+			"description": "tldraw Helper - 通过 tldraw Desktop 的 Local Canvas API 进行编程式绘图，轻松创建流程图、架构图、思维导图等各种可视化内容",
+			"version": "1.0.0",
+			"author": {
+				"name": "likai",
+				"url": "https://github.com/libukai"
+			},
+			"homepage": "https://github.com/libukai/awesome-agent-skills",
+			"category": "productivity",
+			"tags": ["tldraw", "diagram", "visualization", "drawing", "flowchart"]
 		}
 	]
 }
