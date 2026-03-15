@@ -128,7 +128,12 @@ skillhub upgrade # 升级已安装的技能
 
 ## 精选技能
 
-### 官方项目
+### 编程辅助
+
+-   [superpowers](https://github.com/obra/superpowers/tree/main/skills)：涵盖完整编程项目工作流程的 Skills 集合
+-   [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)：面向 UI/UX 设计的 Skills 集合
+
+### 技术开发
 
 -   [agent-browser](https://github.com/vercel-labs/agent-browser/tree/main/skills): Vercel 出品的操控浏览器及应用的 Skills 集合
 -   [anthropics](https://github.com/anthropics/skills)：Anthropic 出品的官方示例 Skills 集合
@@ -155,7 +160,6 @@ skillhub upgrade # 升级已安装的技能
 -   [wordpress](https://github.com/WordPress/agent-skills)：WordPress 出品的内容管理平台 Skills 集合
 -   [vercel](https://github.com/vercel-labs/agent-skills)：Vercel 出品的 React/Next Skills 集合
 
-
 ### 内容创作
 
 -   [baoyu-skills](https://github.com/JimLiu/baoyu-skills)：宝玉的自用 SKills 集合，包括公众号写作、PPT 制作等
@@ -164,21 +168,17 @@ skillhub upgrade # 升级已安装的技能
 -   [cclank](https://github.com/cclank/news-aggregator-skill)：cclank 制作的新闻聚合 Skill，能够自动抓取和总结指定领域的最新资讯
 -   [huangserva](https://github.com/huangserva/skill-prompt-generator)：huangserva 使用 Skill 生成和优化 AI 人像文生图提示词的 Skill
 
-### 编程辅助
-
--   [superpowers](https://github.com/obra/superpowers/tree/main/skills)：涵盖完整编程项目工作流程的 Skills 集合
--   [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)：面向 UI/UX 设计的 Skills 集合
-
 ### 产品使用
 
--   [teng-lin/notebooklm-py](https://github.com/teng-lin/notebooklm-py)：操控 NotebookLM 的 Skill
--   [czlonkowski/n8n-skills](https://github.com/czlonkowski/n8n-skills)：创建 n8n 工作流的 Skills 集合
--   [cloudai-x/threejs-skills](https://github.com/cloudai-x/threejs-skills)： 面向 Three.js 开发的 Skills 集合
+-   [wpsnote](https://github.com/wpsnote/wpsnote-skills)：WPS 出品的办公软件相关 Skills 集合
+-   [notebooklm](https://github.com/teng-lin/notebooklm-py)：操控 NotebookLM 的 Skill
+-   [n8n](https://github.com/czlonkowski/n8n-skills)：创建 n8n 工作流的 Skills 集合
+-   [threejs](https://github.com/cloudai-x/threejs-skills)： 面向 Three.js 开发的 Skills 集合
 
 ### 其他类型
 
--   [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills)：面向市场营销领域的 Skills 集合
--   [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills)： 面向科研工作者的 Skills 集合
+-   [marketingskills](https://github.com/coreyhaines31/marketingskills)：面向市场营销领域的 Skills 集合
+-   [scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills)： 面向科研工作者的 Skills 集合
 
 
 ## 增强插件
