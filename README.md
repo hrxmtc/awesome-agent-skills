@@ -26,21 +26,21 @@
 
 </div>
 
-本项目致力于遵循少而精的原则，收集和分享最优质的 Skills 教程、案例和实践，帮助更多人轻松迈出搭建 Agent 的第一步。
+本项目致力于遵循少而精的原则，收集和分享最优质的 Skill 资源、教程、实践案例，帮助更多人轻松迈出搭建 Agent 的第一步。
 
 > 欢迎关注我的 𝕏 账号 [@李不凯正在研究](https://x.com/libukai) ，以及 💬 微信公众号 [@李不凯正在研究](https://mp.weixin.qq.com/s/uer7HvD2Z9ZbJSPEZWHKRA?scene=0&subscene=90) ，即时获取 Skills 的最新资源和实战教程！
 
-## 基本介绍
+## 快速入门
 
-Skill 是一种轻量级的通用开放标准，通过打包专业知识和工作流程来扩展 AI 的特定能力。
+Skill 是一种轻量级的通用标准，通过打包工作流程和专业知识，为 AI 强化完成特定任务的能力。
 
-当你需要执行可重复的任务时，你无需在每次和 AI 的对话中重复提供自己的流程、知识和偏好。只需将相关内容转化为 Skill，AI 便能自行学会相关的技能。
+当你需要执行可重复的任务时，你无需在每次和 AI 的对话中重复提供相关信息。只需将相关信息转化为 Skill，AI 便能持久化地掌握相应的技能。
 
-经过半年的发展和迭代，Skill 标准已得到各类 AI 产品的广泛支持，也成为了类 Claude Code 生态和类 OpenClaw 生态中增强个性化 AI 能力的标准方案。
+经过半年的发展和迭代，Skill 成为了 Agent 框架中增强 AI 个性化能力的标准方案，也已得到了各类 AI 产品的广泛支持。
 
 ## 标准结构
 
-根据标准定义，每个 Skill 都是一个规范化命名的文件夹，其中集合了指令、脚本和资源，AI 通过在上下文中渐进式导入这些内容来理解和学习相关技能。
+根据标准定义，每个 Skill 都是一个规范化命名的文件夹，包含了流程、资料、脚本等各类资源。AI 通过在上下文中渐进式导入这些内容，来理解和学习相关技能。
 
 ```markdown
 my-skill/
@@ -56,18 +56,23 @@ my-skill/
 
 ![](assets/media/skills_mp.png)
 
-推荐使用 [skillsmp](https://skillsmp.com/zh) 商店，该商店中自动抓取了 Github 上的所有的 Skills 项目，并按照分类、更新时间、Star 数量等标签进行了整理。
+推荐使用 [skillsmp](https://skillsmp.com/zh) 商店，该商店中自动抓取了 Github 上的所有的 Skill 项目，并按照分类、更新时间、星标数量等标签进行了分类整理。
 
 可辅助使用 Vercel 出品的 [skills.sh](https://skills.sh/) 排行榜，直观查看当前最受欢迎的 Skills 仓库和单个 Skill 的使用情况。
 
 对于特定的 skill，使用 `npx skills` 命令行工具可快速发现、添加和管理 skill，具体参数详见 [vercel-labs/skills](https://github.com/vercel-labs/skills)。
 
 ```bash
-npx skills find [query] # 搜索相关技能
-npx skills add <owner/repo> # 从指定 git 或本地路径添加技能
-npx skills list # 列出已安装的技能
-npx skills update # 升级技能
-npx skills remove [skill-name] # 卸载技能
+npx skills find [query]                          # 搜索相关技能
+npx skills add <owner/repo>                      # 安装技能（支持 GitHub 简写、完整 URL、本地路径）
+npx skills add <owner/repo> --skill <name>       # 安装指定技能
+npx skills add <owner/repo> -g                   # 安装到全局（跨项目可用）
+npx skills add <owner/repo> -a claude-code       # 安装到指定 Agent
+npx skills list                                  # 列出已安装的技能
+npx skills check                                 # 检查可用更新
+npx skills update                                # 升级所有技能
+npx skills remove [skill-name]                   # 卸载技能
+npx skills init [name]                           # 创建新的 SKILL.md 模板
 ```
 
 ### 类 OpenClaw 生态
@@ -77,10 +82,14 @@ npx skills remove [skill-name] # 卸载技能
 如果有科学上网的能力，且使用官方版本 OpeClaw，推荐使用官方的 [ClawHub](https://clawhub.com/) 商店，提供的技能更偏技术向且包含了大量海外产品的整合。
 
 ```bash
-npx clawhub search "postgres backups"  # 搜索相关技能
-npx clawhub install <skill-name> # 安装指定名称的技能
-npx clawhub update --all # 升级技能
-npx clawhub update --all --no-input --force # 强制升级技能
+npx clawhub search [query]          # 搜索相关技能
+npx clawhub explore                 # 浏览技能市场
+npx clawhub install <slug>          # 安装技能
+npx clawhub uninstall <slug>        # 卸载技能
+npx clawhub list                    # 列出已安装的技能
+npx clawhub update --all            # 升级所有技能
+npx clawhub inspect <slug>          # 查看技能详情（不安装）
+npx clawhub publish <path>          # 发布技能
 ```
 
 ![](assets/media/skillshub.png)
@@ -102,23 +111,19 @@ skillhub list # 列出已安装的技能
 skillhub upgrade # 升级已安装的技能
 ```
 
-## 创建技能
-
-虽然可以通过技能商店直接安装他人创建的技能，但是为了提升技能的适配度和个性化，更建议根据需要自己动手创建技能，或者在其他人的基础上进行微调。
-
-通过官方出品的  [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator) 可快速创建和迭代个人专属的 skill。结合 [Claude Skill 完全构建指南(中文版)](docs/Claude-Skills-完全构建指南.md) 可进行深度定制和优化，打造更符合自己个性化需求的技能。
-
 ## 优质教程
 
-### 讲座课件
+### 官方文档
 
-- @李不凯正在研究：[Agent Skills 终极指南](/assets/docs/Agent%20Skills%20终极指南.pdf)
+- @Anthropic：[Claude Skill 完全构建指南](docs/Claude-Skills-完全构建指南.md) 
+- @Google：[Agent Skills 五种设计模式](docs/Agent-Skill-五种设计模式.md)
 
 ### 图文教程
 
+  - @李不凯正在研究：[Agent Skills 简要介绍 PPT](/assets/docs/Agent%20Skills%20终极指南.pdf)
 -   @一泽 Eze：[Agent Skills 终极指南：入门、精通、预测](https://mp.weixin.qq.com/s/jUylk813LYbKw0sLiIttTQ)
 -   @deeptoai：[Claude Agent Skills 第一性原理深度解析](https://skills.deeptoai.com/zh/docs/ai-ml/claude-agent-skills-first-principles-deep-dive)
--   @歸藏：[带动效的 PPT 生成 Agent！使用教学&创作思路](https://x.com/op7418/status/2010979152284041401)
+
 
 ### 视频教程
 
@@ -126,39 +131,53 @@ skillhub upgrade # 升级已安装的技能
 -   @白白说大模型：[别再造 Agent 了，未来是Skills的](https://www.youtube.com/watch?v=xeoWgfkxADI)
 -   @01Coder：[OpenCode + 智谱GLM + Agent Skills打造高质量智能开发环境](https://www.youtube.com/watch?v=mGzY2bCoVhU)
 
+## 官方项目
+
+<table>
+<tr>
+<td><a href="https://github.com/vercel-labs/agent-browser/tree/main/skills">agent-browser</a></td>
+<td><a href="https://github.com/anthropics/skills">anthropics</a></td>
+<td><a href="https://github.com/better-auth/skills">better-auth</a></td>
+<td><a href="https://github.com/black-forest-labs/skills">black-forest-labs</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/browser-use/browser-use/tree/main/skills">browser-use</a></td>
+<td><a href="https://github.com/ClickHouse/agent-skills">clickhouse</a></td>
+<td><a href="https://github.com/cloudflare/skills">cloudflare</a></td>
+<td><a href="https://github.com/langgenius/dify/tree/main/.claude/skills">dify</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/expo/skills">expo</a></td>
+<td><a href="https://github.com/firecrawl/cli">firecrawl</a></td>
+<td><a href="https://github.com/google-gemini/gemini-skills">gemini</a></td>
+<td><a href="https://github.com/huggingface/skills">huggingface</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/microsoft/agent-skills">microsoft</a></td>
+<td><a href="https://github.com/kepano/obsidian-skills">obsidian</a></td>
+<td><a href="https://github.com/openclaw/openclaw/tree/main/skills">openclaw</a></td>
+<td><a href="https://github.com/openai/skills">openai</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/remotion-dev/skills">remotion</a></td>
+<td><a href="https://github.com/replicate/skills">replicates</a></td>
+<td><a href="https://github.com/sanity-io/agent-toolkit/tree/main/skills">sanity</a></td>
+<td><a href="https://github.com/slidevjs/slidev/tree/main/skills/slidev">slidev</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/stripe/ai">stripe</a></td>
+<td><a href="https://github.com/supabase/agent-skills">supabase</a></td>
+<td><a href="https://github.com/vercel-labs/agent-skills">vercel</a></td>
+<td><a href="https://github.com/WordPress/agent-skills">wordpress</a></td>
+</tr>
+</table>
+
 ## 精选技能
 
-### 编程辅助
+### 编程开发
 
 -   [superpowers](https://github.com/obra/superpowers/tree/main/skills)：涵盖完整编程项目工作流程的 Skills 集合
 -   [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)：面向 UI/UX 设计的 Skills 集合
-
-### 技术开发
-
--   [agent-browser](https://github.com/vercel-labs/agent-browser/tree/main/skills): Vercel 出品的操控浏览器及应用的 Skills 集合
--   [anthropics](https://github.com/anthropics/skills)：Anthropic 出品的官方示例 Skills 集合
--   [better-auth](https://github.com/better-auth/skills)：Better Auth 出品的认证工具 Skills 集合
--   [black-forest-labs](https://github.com/black-forest-labs/skills)：Black Forest Labs 出品的操控 FLUX 模型的 Skills 集合
--   [browser-use](https://github.com/browser-use/browser-use/tree/main/skills)：Browser Use 出品的浏览器操作 Skills 集合
--   [cloudflare](https://github.com/cloudflare/skills)：Cloudflare 出品的 API 调用 Skills 集合
--   [clickhouse](https://github.com/ClickHouse/agent-skills)：ClickHouse 出品的数据库查询和分析 Skills 集合
--   [expo](https://github.com/expo/skills)：Expo 出品的 React Native Skills 集合
--   [firecrawl](https://github.com/firecrawl/cli)：Firecrawl 出品的 CLI 工具调用 Skills
--   [gemini](https://github.com/google-gemini/gemini-skills): Google Gemini 出品的 API/SDK 调用 Skills 集合
--   [huggingface](https://github.com/huggingface/skills)：HuggingFace 出品使用 Skill 训练大模型
--   [obsidian](https://github.com/kepano/obsidian-skills)：Obsidian CEO 出品增强 Obsidian 功能的 Skills 集合
--   [dify](https://github.com/langgenius/dify/tree/main/.claude/skills)：Dify 出品的多功能 Skills 集合
--   [microsoft](https://github.com/microsoft/agent-skills)：Microsoft 出品用于 Azure 服务的 Agent Skills 集合
--   [openclaw](https://github.com/openclaw/openclaw/tree/main/skills)：OpenClaw 官方 Skills 集合
--   [openai](https://github.com/openai/skills)：OpenAI 出品的官方 Skills 集合
--   [remotion](https://github.com/remotion-dev/skills)：Remotion 出品的使用 Remotion 创建视频内容
--   [replicates](https://github.com/replicate/skills)：Replicates 出品的调用 AI 模型的 Skills 集合
--   [slidev](https://github.com/slidevjs/slidev/tree/main/skills/slidev)：Slidev 出品的幻灯片制作 Skills 集合
--   [stripe](https://github.com/stripe/ai)：Stripe 出品的金融支付相关 Skills 集合
--   [sanity](https://github.com/sanity-io/agent-toolkit/tree/main/skills)：Sanity 出品的内容管理平台 Skills 集合
--   [supabase](https://github.com/supabase/agent-skills)：Supabase 出品的 PostgreSQL 最佳实践
--   [wordpress](https://github.com/WordPress/agent-skills)：WordPress 出品的内容管理平台 Skills 集合
--   [vercel](https://github.com/vercel-labs/agent-skills)：Vercel 出品的 React/Next Skills 集合
 
 ### 内容创作
 
@@ -170,24 +189,35 @@ skillhub upgrade # 升级已安装的技能
 
 ### 产品使用
 
--   [wpsnote](https://github.com/wpsnote/wpsnote-skills)：WPS 出品的办公软件相关 Skills 集合
+-   [wps](https://github.com/wpsnote/wpsnote-skills)：WPS 出品的办公软件相关 Skills 集合
 -   [notebooklm](https://github.com/teng-lin/notebooklm-py)：操控 NotebookLM 的 Skill
 -   [n8n](https://github.com/czlonkowski/n8n-skills)：创建 n8n 工作流的 Skills 集合
 -   [threejs](https://github.com/cloudai-x/threejs-skills)： 面向 Three.js 开发的 Skills 集合
 
 ### 其他类型
 
--   [marketingskills](https://github.com/coreyhaines31/marketingskills)：面向市场营销领域的 Skills 集合
--   [scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills)： 面向科研工作者的 Skills 集合
+-  [pua](https://github.com/tanweai/pua)：以 PUA 的方式驱动 Agent 更卖力的干活
+-   [office-hours](https://github.com/garrytan/gstack/tree/main/office-hours)：使用 YC 的视角提供各种建议
+-   [marketingskills](https://github.com/coreyhaines31/marketingskills)：强化市场营销的能力领域
+-   [scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills)： 提升科研工作者的技能水平
 
 
-## 增强插件
+## 创建技能
 
-在官方 skill-creator plugin 的基础上，本项目整合 [Claude Skill 完整构建指南](docs/Claude-Skills-完全构建指南.md) 中的最佳实践，构建了一个更为强大的 Agent Skills Toolkit ，帮助你快速创建和改进 Agent Skills。
+虽然可以通过技能商店直接安装他人创建的技能，但是为了提升技能的适配度和个性化，强烈建议根据需要自己动手创建技能，或者在其他人的基础上进行微调。
+
+### 官方技能
+
+通过官方出品的  [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator) 可快速创建和迭代个人专属的 skill。
+
+
+### 增强插件
+
+在官方 skill-creator plugin 的基础上，本项目整合 [Claude Skill 完整构建指南](docs/Claude-Skills-完全构建指南.md) 和 [Agent Skills 五种设计模式](docs/Agent-Skill-五种设计模式.md) 的最佳实践，构建了一个更为强大的 Agent Skills Toolkit ，帮助你快速创建和改进 Agent Skills。
 
 **注意：该插件目前仅支持 Claude Code**
 
-### 添加市场
+#### 添加市场
 
 启动 Claude Code，进入插件市场，添加 `libukai/awesome-agent-skills` 市场，也可以直接在输入框中使用以下指令添加市场：
 
@@ -195,13 +225,13 @@ skillhub upgrade # 升级已安装的技能
 /plugin marketplace add libukai/awesome-agent-skills
 ```
 
-### 安装插件
+#### 安装插件
 
 成功安装市场之后，选择安装 `agent-skills-toolkit` 插件
 
 ![](assets/media/skill-creator-pro.png)
 
-### 快捷指令
+#### 快捷指令
 
 插件中置入了多个快捷指令，覆盖了从创建、改进、测试到优化技能描述的完整工作流程：
 
