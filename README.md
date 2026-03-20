@@ -32,15 +32,15 @@
 
 ## 快速入门
 
-Skill 是一种轻量级的通用标准，通过打包工作流程和专业知识，为 AI 强化完成特定任务的能力。
+Skill 是一种轻量级的通用标准，通过打包工作流程和专业知识，为 AI 提升执行特定任务的能力。
 
-当你需要执行可重复的任务时，你无需在每次和 AI 的对话中重复提供相关信息。只需将相关信息转化为 Skill，AI 便能持久化地掌握相应的技能。
+当你需要执行可重复的任务时，你无需在每次和 AI 的对话中重复输入相关信息。只需安装对应的 Skill，AI 便能掌握相应的技能。
 
-经过半年的发展和迭代，Skill 成为了 Agent 框架中增强 AI 个性化能力的标准方案，也已得到了各类 AI 产品的广泛支持。
+经过半年的发展和迭代，Skill 已成为 Agent 框架中增强 AI 个性化能力的标准方案，并得到了各类 AI 产品的广泛支持。
 
 ## 标准结构
 
-根据标准定义，每个 Skill 都是一个规范化命名的文件夹，包含了流程、资料、脚本等各类资源。AI 通过在上下文中渐进式导入这些内容，来理解和学习相关技能。
+根据标准定义，每个 Skill 都是一个规范化命名的文件夹，包含了流程、资料、脚本等各类资源。AI 通过在上下文中渐进式导入这些内容，来学习和掌握相关技能。
 
 ```markdown
 my-skill/
@@ -51,6 +51,8 @@ my-skill/
 ```
 
 ## 安装技能
+
+Skill 可以在 Claude 和 ChatGPT 的 App 中使用，也可以在 IDE 及 TUI 编程工具中使用，还可以在 OpenClaw 等 Agent Harness 上使用。
 
 ### 类 Claude Code 生态
 
@@ -65,14 +67,10 @@ my-skill/
 ```bash
 npx skills find [query]                          # 搜索相关技能
 npx skills add <owner/repo>                      # 安装技能（支持 GitHub 简写、完整 URL、本地路径）
-npx skills add <owner/repo> --skill <name>       # 安装指定技能
-npx skills add <owner/repo> -g                   # 安装到全局（跨项目可用）
-npx skills add <owner/repo> -a claude-code       # 安装到指定 Agent
 npx skills list                                  # 列出已安装的技能
 npx skills check                                 # 检查可用更新
 npx skills update                                # 升级所有技能
 npx skills remove [skill-name]                   # 卸载技能
-npx skills init [name]                           # 创建新的 SKILL.md 模板
 ```
 
 ### 类 OpenClaw 生态
@@ -89,7 +87,6 @@ npx clawhub uninstall <slug>        # 卸载技能
 npx clawhub list                    # 列出已安装的技能
 npx clawhub update --all            # 升级所有技能
 npx clawhub inspect <slug>          # 查看技能详情（不安装）
-npx clawhub publish <path>          # 发布技能
 ```
 
 ![](assets/media/skillshub.png)
@@ -116,6 +113,7 @@ skillhub upgrade # 升级已安装的技能
 ### 官方文档
 
 - @Anthropic：[Claude Skill 完全构建指南](docs/Claude-Skills-完全构建指南.md) 
+- @Anthropic：[Claude Agent Skills 实战经验](docs/Claude-Code-Skills-实战经验.md)
 - @Google：[Agent Skills 五种设计模式](docs/Agent-Skill-五种设计模式.md)
 
 ### 图文教程
@@ -131,7 +129,7 @@ skillhub upgrade # 升级已安装的技能
 -   @白白说大模型：[别再造 Agent 了，未来是Skills的](https://www.youtube.com/watch?v=xeoWgfkxADI)
 -   @01Coder：[OpenCode + 智谱GLM + Agent Skills打造高质量智能开发环境](https://www.youtube.com/watch?v=mGzY2bCoVhU)
 
-## 官方项目
+## 官方技能
 
 <table>
 <tr>
@@ -139,26 +137,24 @@ skillhub upgrade # 升级已安装的技能
 <td><a href="https://github.com/anthropics/skills">anthropics</a></td>
 <td><a href="https://github.com/better-auth/skills">better-auth</a></td>
 <td><a href="https://github.com/black-forest-labs/skills">black-forest-labs</a></td>
+<td><a href="https://github.com/browser-use/browser-use/tree/main/skills">browser-use</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/browser-use/browser-use/tree/main/skills">browser-use</a></td>
 <td><a href="https://github.com/ClickHouse/agent-skills">clickhouse</a></td>
 <td><a href="https://github.com/cloudflare/skills">cloudflare</a></td>
 <td><a href="https://github.com/langgenius/dify/tree/main/.claude/skills">dify</a></td>
-</tr>
-<tr>
 <td><a href="https://github.com/expo/skills">expo</a></td>
 <td><a href="https://github.com/firecrawl/cli">firecrawl</a></td>
-<td><a href="https://github.com/google-gemini/gemini-skills">gemini</a></td>
-<td><a href="https://github.com/huggingface/skills">huggingface</a></td>
 </tr>
 <tr>
+<td><a href="https://github.com/google-gemini/gemini-skills">gemini</a></td>
+<td><a href="https://github.com/huggingface/skills">huggingface</a></td>
 <td><a href="https://github.com/microsoft/agent-skills">microsoft</a></td>
 <td><a href="https://github.com/kepano/obsidian-skills">obsidian</a></td>
 <td><a href="https://github.com/openclaw/openclaw/tree/main/skills">openclaw</a></td>
-<td><a href="https://github.com/openai/skills">openai</a></td>
 </tr>
 <tr>
+<td><a href="https://github.com/openai/skills">openai</a></td>
 <td><a href="https://github.com/remotion-dev/skills">remotion</a></td>
 <td><a href="https://github.com/replicate/skills">replicates</a></td>
 <td><a href="https://github.com/sanity-io/agent-toolkit/tree/main/skills">sanity</a></td>
@@ -169,6 +165,7 @@ skillhub upgrade # 升级已安装的技能
 <td><a href="https://github.com/supabase/agent-skills">supabase</a></td>
 <td><a href="https://github.com/vercel-labs/agent-skills">vercel</a></td>
 <td><a href="https://github.com/WordPress/agent-skills">wordpress</a></td>
+<td></td>
 </tr>
 </table>
 
