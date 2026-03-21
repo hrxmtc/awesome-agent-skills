@@ -52,7 +52,17 @@ my-skill/
 
 ## 安装技能
 
-Skill 可以在 Claude 和 ChatGPT 的 App 中使用，也可以在 IDE 及 TUI 编程工具中使用，还可以在 OpenClaw 等 Agent Harness 上使用。
+Skill 可以在 Claude 和 ChatGPT 这类 GUI 的 App 中使用，也可以在 Cursor 和 Claude Code 这类编程 IDE 及 TUI 工具中使用，还可以在 OpenClaw 等 Agent Harness 上使用。
+
+安装 Skill 过程的本质，其实就是将 Skill 对应的文件夹放到特定的目录下，以便 AI 能按需加载和使用。
+
+### 类 Claude App 生态
+
+![](assets/media/claude_app.png)
+
+目前在 App 中使用 Skill 的方式主要有两种：通过 App 自带的 Skill 商店安装，或者通过上传压缩包的方式安装。
+
+对于官方商店中没有的 Skill，可以从下方推荐的 Skill 第三方商店中下载并手动上传安装。
 
 ### 类 Claude Code 生态
 
@@ -96,7 +106,7 @@ npx clawhub inspect <slug>          # 查看技能详情（不安装）
 首先，需要安装 Skill Hub CLI 工具，可以通过以下命令进行安装：
 
 ```bash
-curl -fsSL https://skillhub-1251783334.cos.ap-guangzhou.myqcloud.com/install/install.sh | bash
+curl -fsSL https://skillhub-1388575217.cos.ap-guangzhou.myqcloud.com/install/install.sh | bash
 ```
 
 安装完成后，可以使用以下命令来安装和管理技能：
@@ -127,45 +137,63 @@ skillhub upgrade # 升级已安装的技能
 
 -   @马克的技术工作坊：[Agent Skill 从使用到原理，一次讲清](https://www.youtube.com/watch?v=yDc0_8emz7M)
 -   @白白说大模型：[别再造 Agent 了，未来是Skills的](https://www.youtube.com/watch?v=xeoWgfkxADI)
--   @01Coder：[OpenCode + 智谱GLM + Agent Skills打造高质量智能开发环境](https://www.youtube.com/watch?v=mGzY2bCoVhU)
+-   @AI学长小林：[OpenClaw 全网最细教学：安装→Skills实战→多Agent协作](https://www.youtube.com/watch?v=2ZZCyHzo9as)
 
-## 官方技能
+## 官方项目
 
 <table>
+<tr><th colspan="5">🤖 AI 模型与平台</th></tr>
 <tr>
-<td><a href="https://github.com/vercel-labs/agent-browser/tree/main/skills">agent-browser</a></td>
 <td><a href="https://github.com/anthropics/skills">anthropics</a></td>
-<td><a href="https://github.com/better-auth/skills">better-auth</a></td>
-<td><a href="https://github.com/black-forest-labs/skills">black-forest-labs</a></td>
-<td><a href="https://github.com/browser-use/browser-use/tree/main/skills">browser-use</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/ClickHouse/agent-skills">clickhouse</a></td>
-<td><a href="https://github.com/cloudflare/skills">cloudflare</a></td>
-<td><a href="https://github.com/langgenius/dify/tree/main/.claude/skills">dify</a></td>
-<td><a href="https://github.com/expo/skills">expo</a></td>
-<td><a href="https://github.com/firecrawl/cli">firecrawl</a></td>
-</tr>
-<tr>
+<td><a href="https://github.com/openai/skills">openai</a></td>
 <td><a href="https://github.com/google-gemini/gemini-skills">gemini</a></td>
 <td><a href="https://github.com/huggingface/skills">huggingface</a></td>
-<td><a href="https://github.com/microsoft/agent-skills">microsoft</a></td>
-<td><a href="https://github.com/kepano/obsidian-skills">obsidian</a></td>
-<td><a href="https://github.com/openclaw/openclaw/tree/main/skills">openclaw</a></td>
+<td><a href="https://github.com/replicate/skills">replicate</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/openai/skills">openai</a></td>
-<td><a href="https://github.com/remotion-dev/skills">remotion</a></td>
-<td><a href="https://github.com/replicate/skills">replicates</a></td>
-<td><a href="https://github.com/sanity-io/agent-toolkit/tree/main/skills">sanity</a></td>
-<td><a href="https://github.com/slidevjs/slidev/tree/main/skills/slidev">slidev</a></td>
+<td><a href="https://github.com/elevenlabs/skills">elevenlabs</a></td>
+<td><a href="https://github.com/black-forest-labs/skills">black-forest-labs</a></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr><th colspan="5">☁️ 云服务与基础设施</th></tr>
+<tr>
+<td><a href="https://github.com/cloudflare/skills">cloudflare</a></td>
+<td><a href="https://github.com/hashicorp/agent-skills">hashicorp</a></td>
+<td><a href="https://github.com/databricks/databricks-agent-skills">databricks</a></td>
+<td><a href="https://github.com/ClickHouse/agent-skills">clickhouse</a></td>
+<td><a href="https://github.com/supabase/agent-skills">supabase</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/stripe/ai">stripe</a></td>
-<td><a href="https://github.com/supabase/agent-skills">supabase</a></td>
-<td><a href="https://github.com/vercel-labs/agent-skills">vercel</a></td>
-<td><a href="https://github.com/WordPress/agent-skills">wordpress</a></td>
+<td><a href="https://github.com/launchdarkly/agent-skills">launchdarkly</a></td>
+<td><a href="https://github.com/getsentry/skills">sentry</a></td>
 <td></td>
+<td></td>
+</tr>
+<tr><th colspan="5">🛠️ 开发框架与工具</th></tr>
+<tr>
+<td><a href="https://github.com/vercel-labs/agent-skills">vercel</a></td>
+<td><a href="https://github.com/microsoft/agent-skills">microsoft</a></td>
+<td><a href="https://github.com/expo/skills">expo</a></td>
+<td><a href="https://github.com/better-auth/skills">better-auth</a></td>
+<td><a href="https://github.com/posit-dev/skills">posit</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/remotion-dev/skills">remotion</a></td>
+<td><a href="https://github.com/slidevjs/slidev">slidev</a></td>
+<td><a href="https://github.com/vercel-labs/agent-browser">agent-browser</a></td>
+<td><a href="https://github.com/browser-use/browser-use">browser-use</a></td>
+<td><a href="https://github.com/firecrawl/cli">firecrawl</a></td>
+</tr>
+<tr><th colspan="5">📝 内容与协作</th></tr>
+<tr>
+<td><a href="https://github.com/makenotion/skills">notion</a></td>
+<td><a href="https://github.com/kepano/obsidian-skills">obsidian</a></td>
+<td><a href="https://github.com/WordPress/agent-skills">wordpress</a></td>
+<td><a href="https://github.com/langgenius/dify">dify</a></td>
+<td><a href="https://github.com/sanity-io/agent-toolkit">sanity</a></td>
 </tr>
 </table>
 
@@ -179,7 +207,7 @@ skillhub upgrade # 升级已安装的技能
 ### 内容创作
 
 -   [baoyu-skills](https://github.com/JimLiu/baoyu-skills)：宝玉的自用 SKills 集合，包括公众号写作、PPT 制作等
--   [libukai](https://github.com/libukai/awesome-agent-skills/tree/main/skills): 李不凯发布 Obsidian 相关工具 Skill
+-   [libukai](https://github.com/libukai/awesome-agent-skills): 李不凯发布 Obsidian 相关工具 Skill
 -   [op7418](https://github.com/op7418)：歸藏制作的一系列 Skills 集合，包括 PPT 制作、Youtube 分析等
 -   [cclank](https://github.com/cclank/news-aggregator-skill)：cclank 制作的新闻聚合 Skill，能够自动抓取和总结指定领域的最新资讯
 -   [huangserva](https://github.com/huangserva/skill-prompt-generator)：huangserva 使用 Skill 生成和优化 AI 人像文生图提示词的 Skill

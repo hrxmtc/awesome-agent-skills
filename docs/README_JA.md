@@ -131,40 +131,58 @@ skillhub upgrade                  # インストール済みスキルをアッ�
 ## 公式スキル
 
 <table>
+<tr><th colspan="5">🤖 AI モデルとプラットフォーム</th></tr>
 <tr>
-<td><a href="https://github.com/vercel-labs/agent-browser/tree/main/skills">agent-browser</a></td>
 <td><a href="https://github.com/anthropics/skills">anthropics</a></td>
-<td><a href="https://github.com/better-auth/skills">better-auth</a></td>
-<td><a href="https://github.com/black-forest-labs/skills">black-forest-labs</a></td>
-<td><a href="https://github.com/browser-use/browser-use/tree/main/skills">browser-use</a></td>
-</tr>
-<tr>
-<td><a href="https://github.com/ClickHouse/agent-skills">clickhouse</a></td>
-<td><a href="https://github.com/cloudflare/skills">cloudflare</a></td>
-<td><a href="https://github.com/langgenius/dify/tree/main/.claude/skills">dify</a></td>
-<td><a href="https://github.com/expo/skills">expo</a></td>
-<td><a href="https://github.com/firecrawl/cli">firecrawl</a></td>
-</tr>
-<tr>
+<td><a href="https://github.com/openai/skills">openai</a></td>
 <td><a href="https://github.com/google-gemini/gemini-skills">gemini</a></td>
 <td><a href="https://github.com/huggingface/skills">huggingface</a></td>
-<td><a href="https://github.com/microsoft/agent-skills">microsoft</a></td>
-<td><a href="https://github.com/kepano/obsidian-skills">obsidian</a></td>
-<td><a href="https://github.com/openclaw/openclaw/tree/main/skills">openclaw</a></td>
+<td><a href="https://github.com/replicate/skills">replicates</a></td>
 </tr>
 <tr>
-<td><a href="https://github.com/openai/skills">openai</a></td>
-<td><a href="https://github.com/remotion-dev/skills">remotion</a></td>
-<td><a href="https://github.com/replicate/skills">replicates</a></td>
-<td><a href="https://github.com/sanity-io/agent-toolkit/tree/main/skills">sanity</a></td>
-<td><a href="https://github.com/slidevjs/slidev/tree/main/skills/slidev">slidev</a></td>
+<td><a href="https://github.com/elevenlabs/skills">elevenlabs</a></td>
+<td><a href="https://github.com/black-forest-labs/skills">black-forest-labs</a></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr><th colspan="5">☁️ クラウドサービスとインフラ</th></tr>
+<tr>
+<td><a href="https://github.com/cloudflare/skills">cloudflare</a></td>
+<td><a href="https://github.com/hashicorp/agent-skills">hashicorp</a></td>
+<td><a href="https://github.com/databricks/databricks-agent-skills">databricks</a></td>
+<td><a href="https://github.com/ClickHouse/agent-skills">clickhouse</a></td>
+<td><a href="https://github.com/supabase/agent-skills">supabase</a></td>
 </tr>
 <tr>
 <td><a href="https://github.com/stripe/ai">stripe</a></td>
-<td><a href="https://github.com/supabase/agent-skills">supabase</a></td>
-<td><a href="https://github.com/vercel-labs/agent-skills">vercel</a></td>
-<td><a href="https://github.com/WordPress/agent-skills">wordpress</a></td>
+<td><a href="https://github.com/launchdarkly/agent-skills">launchdarkly</a></td>
+<td><a href="https://github.com/getsentry/skills">sentry</a></td>
 <td></td>
+<td></td>
+</tr>
+<tr><th colspan="5">🛠️ 開発フレームワークとツール</th></tr>
+<tr>
+<td><a href="https://github.com/vercel-labs/agent-skills">vercel</a></td>
+<td><a href="https://github.com/microsoft/agent-skills">microsoft</a></td>
+<td><a href="https://github.com/expo/skills">expo</a></td>
+<td><a href="https://github.com/better-auth/skills">better-auth</a></td>
+<td><a href="https://github.com/posit-dev/skills">posit</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/remotion-dev/skills">remotion</a></td>
+<td><a href="https://github.com/slidevjs/slidev/tree/main/skills/slidev">slidev</a></td>
+<td><a href="https://github.com/vercel-labs/agent-browser/tree/main/skills">agent-browser</a></td>
+<td><a href="https://github.com/browser-use/browser-use/tree/main/skills">browser-use</a></td>
+<td><a href="https://github.com/firecrawl/cli">firecrawl</a></td>
+</tr>
+<tr><th colspan="5">📝 コンテンツとコラボレーション</th></tr>
+<tr>
+<td><a href="https://github.com/makenotion/skills">notion</a></td>
+<td><a href="https://github.com/kepano/obsidian-skills">obsidian</a></td>
+<td><a href="https://github.com/WordPress/agent-skills">wordpress</a></td>
+<td><a href="https://github.com/langgenius/dify/tree/main/.claude/skills">dify</a></td>
+<td><a href="https://github.com/sanity-io/agent-toolkit/tree/main/skills">sanity</a></td>
 </tr>
 </table>
 
