@@ -234,18 +234,13 @@ skillhub upgrade # 升级已安装的技能
 -   [scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills)： 提升科研工作者的技能
 
 
-## 安全指南
+## 安全警示
 
-随着 Agent 自主能力的增强，安全问题日益重要。
+由于 Skill 中可能包含了调用外部 API、执行脚本等具有潜在风险的操作，因此在设计和使用 Skill 时，安全问题必须被高度重视。
 
-### Skill 安全设计原则
+建议在安装 Skill 时，优先选择来自官方商店或知名第三方商店的 Skill，并仔细阅读 Skill 的描述和用户评价，避免安装来源不明的 Skill。
 
-1. 将所有外部输入视为不可信
-2. 按任务应用最小权限
-3. 破坏性操作需要人工确认（Human-in-the-loop）
-4. 密钥只存服务端，不暴露给 Agent
-5. 默认假设存在绕过控制的对抗性尝试
-
+对于安全性要求性较高的场景，可以参考 @余弦 的[OpenClaw极简安全实践指南v2.8](https://github.com/slowmist/openclaw-security-practice-guide/blob/main/docs/OpenClaw%E6%9E%81%E7%AE%80%E5%AE%89%E5%85%A8%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97v2.8.md) 让 AI 进行自查。
 
 ## 创建技能
 
