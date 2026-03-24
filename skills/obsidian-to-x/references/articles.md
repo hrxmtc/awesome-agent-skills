@@ -76,13 +76,13 @@ Convert markdown and inspect structure:
 
 ```bash
 # Get JSON with all metadata
-${BUN_X} ${SKILL_DIR}/scripts/md-to-html.ts article.md
+${BUN_X} ${SKILL_DIR}/scripts/md-to-article.ts article.md
 
 # Output HTML only
-${BUN_X} ${SKILL_DIR}/scripts/md-to-html.ts article.md --html-only
+${BUN_X} ${SKILL_DIR}/scripts/md-to-article.ts article.md --html-only
 
 # Save HTML to file
-${BUN_X} ${SKILL_DIR}/scripts/md-to-html.ts article.md --save-html /tmp/article.html
+${BUN_X} ${SKILL_DIR}/scripts/md-to-article.ts article.md --save-html /tmp/article.html
 ```
 
 JSON output:
@@ -165,7 +165,7 @@ Claude:
 
 ## How It Works
 
-1. `md-to-html.ts` converts Markdown to HTML:
+1. `md-to-article.ts` converts Obsidian Markdown to HTML:
    - Extracts frontmatter (title, cover)
    - Converts markdown to HTML
    - Replaces images with unique placeholders

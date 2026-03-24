@@ -5,15 +5,17 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 
-import { parseMarkdown } from './md-to-html.js';
+import { parseMarkdown } from './md-to-article.js';
 import {
   CHROME_CANDIDATES_BASIC,
   CdpConnection,
+  cdpPasteImage,
   copyHtmlToClipboard,
   copyImageToClipboard,
   findChromeExecutable,
   getDefaultProfileDir,
   getFreePort,
+  grantClipboardPermissions,
   pasteFromClipboard,
   sleep,
   waitForChromeDebugPort,
@@ -88,14 +90,16 @@ export async function publishArticle(options: ArticleOptions): Promise<void> {
   const parsed = await parseMarkdown(markdownPath, {
     title: options.title,
     coverImage: options.coverImage,
+    projectRoot: process.cwd(),
   });
 
   console.log(`[x-article] Title: ${parsed.title}`);
   console.log(`[x-article] Cover: ${parsed.coverImage ?? 'none'}`);
   console.log(`[x-article] Content images: ${parsed.contentImages.length}`);
 
-  // Save HTML to temp file
-  const htmlPath = path.join(os.tmpdir(), 'x-article-content.html');
+  // Save HTML to system temp directory to avoid cross-device link errors
+  const tempDir = os.tmpdir();
+  const htmlPath = path.join(tempDir, 'x-article-content.html');
   await writeFile(htmlPath, parsed.html, 'utf-8');
   console.log(`[x-article] HTML saved to: ${htmlPath}`);
 
@@ -147,6 +151,9 @@ export async function publishArticle(options: ArticleOptions): Promise<void> {
     await cdp.send('Page.enable', {}, { sessionId });
     await cdp.send('Runtime.enable', {}, { sessionId });
     await cdp.send('DOM.enable', {}, { sessionId });
+
+    // Grant clipboard permissions so CDP paste works even when Chrome is in background
+    const clipboardGranted = await grantClipboardPermissions(cdp);
 
     console.log('[x-article] Waiting for articles page...');
     await sleep(1000);
@@ -490,7 +497,7 @@ export async function publishArticle(options: ArticleOptions): Promise<void> {
                       // Found exact placeholder - scroll to it first
                       const parentElement = node.parentElement;
                       if (parentElement) {
-                        parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        parentElement.scrollIntoView({ behavior: 'instant', block: 'center' });
                       }
 
                       // Select it
@@ -543,73 +550,21 @@ export async function publishArticle(options: ArticleOptions): Promise<void> {
 
         console.log(`[x-article] Copying image: ${path.basename(img.localPath)}`);
 
-        // Copy image to clipboard
-        if (!copyImageToClipboard(img.localPath)) {
-          console.warn(`[x-article] Failed to copy image to clipboard`);
-          continue;
-        }
-
-        // Wait for clipboard to be fully ready
-        await sleep(1000);
-
-        // Delete placeholder using execCommand (more reliable than keyboard events for DraftJS)
-        console.log(`[x-article] Deleting placeholder...`);
-        const deleteResult = await cdp.send<{ result: { value: boolean } }>('Runtime.evaluate', {
-          expression: `(() => {
-            const sel = window.getSelection();
-            if (!sel || sel.isCollapsed) return false;
-            // Try execCommand delete first
-            if (document.execCommand('delete', false)) return true;
-            // Fallback: replace selection with empty using insertText
-            document.execCommand('insertText', false, '');
-            return true;
-          })()`,
-          returnByValue: true,
-        }, { sessionId });
-
-        await sleep(500);
-
-        // Check that placeholder is no longer in editor (exact match, not substring)
-        const afterDelete = await cdp.send<{ result: { value: boolean } }>('Runtime.evaluate', {
-          expression: `(() => {
-            const editor = document.querySelector('.DraftEditor-editorContainer [data-contents="true"]');
-            if (!editor) return true;
-            const text = editor.innerText;
-            const placeholder = ${JSON.stringify(img.placeholder)};
-            // Use regex to find exact match (not followed by digit)
-            const regex = new RegExp(placeholder + '(?!\\\\d)');
-            return !regex.test(text);
-          })()`,
-          returnByValue: true,
-        }, { sessionId });
-
-        if (!afterDelete.result.value) {
-          console.warn(`[x-article] Placeholder may not have been deleted, trying dispatchEvent...`);
-          // Try selecting and deleting with InputEvent
-          await selectPlaceholder(1);
-          await sleep(300);
-          await cdp.send('Runtime.evaluate', {
-            expression: `(() => {
-              const editor = document.querySelector('.DraftEditor-editorContainer [contenteditable="true"]');
-              if (!editor) return;
-              editor.focus();
-              // Dispatch beforeinput and input events for deletion
-              const beforeEvent = new InputEvent('beforeinput', { inputType: 'deleteContentBackward', bubbles: true, cancelable: true });
-              editor.dispatchEvent(beforeEvent);
-              const inputEvent = new InputEvent('input', { inputType: 'deleteContentBackward', bubbles: true });
-              editor.dispatchEvent(inputEvent);
-            })()`,
-          }, { sessionId });
-          await sleep(500);
-        }
-
         // Count existing image blocks before paste
         const imgCountBefore = await cdp.send<{ result: { value: number } }>('Runtime.evaluate', {
           expression: `document.querySelectorAll('section[data-block="true"][contenteditable="false"] img[src^="blob:"]').length`,
           returnByValue: true,
         }, { sessionId });
+        const expectedImgCount = imgCountBefore.result.value + 1;
 
-        // Focus editor to ensure cursor is in position
+        // Step 1: Delete placeholder via keyboard Backspace (same pattern as code blocks)
+        // Synthetic paste-to-replace is unreliable: DraftJS doesn't always remove the
+        // selection from ContentState when processing synthetic ClipboardEvents, so
+        // placeholders "reappear" on the next re-render.  Deleting first via Backspace
+        // goes through DraftJS's key handler and reliably updates ContentState.
+        console.log(`[x-article] Deleting placeholder "${img.placeholder}" via keyboard...`);
+
+        // Focus editor so DraftJS receives keyboard events
         await cdp.send('Runtime.evaluate', {
           expression: `(() => {
             const editor = document.querySelector('.DraftEditor-editorContainer [contenteditable="true"]');
@@ -618,41 +573,182 @@ export async function publishArticle(options: ArticleOptions): Promise<void> {
         }, { sessionId });
         await sleep(300);
 
-        // Paste image using paste script (activates Chrome, sends real keystroke)
-        console.log(`[x-article] Pasting image...`);
-        if (pasteFromClipboard('Google Chrome', 5, 1000)) {
-          console.log(`[x-article] Image pasted: ${path.basename(img.localPath)}`);
-        } else {
-          console.warn(`[x-article] Failed to paste image after retries`);
+        // Backspace to delete selected placeholder text (updates ContentState)
+        await cdp.send('Input.dispatchKeyEvent', {
+          type: 'keyDown', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8,
+        }, { sessionId });
+        await cdp.send('Input.dispatchKeyEvent', {
+          type: 'keyUp', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8,
+        }, { sessionId });
+        await sleep(200);
+
+        // Placeholder occupied an entire DraftJS block — check if an empty block remains.
+        // If the previous sibling is an atomic block (e.g. a previously inserted image),
+        // do NOT remove the empty block (a second Backspace could select/delete the atomic).
+        const emptyBlockInfo = await cdp.send<{ result: { value: { empty: boolean; prevAtomic: boolean } } }>('Runtime.evaluate', {
+          expression: `(() => {
+            const sel = window.getSelection();
+            if (!sel || !sel.focusNode) return { empty: false, prevAtomic: false };
+            let node = sel.focusNode;
+            if (node.nodeType === 3) node = node.parentElement;
+            const block = node?.closest?.('[data-block="true"]');
+            if (!block) return { empty: false, prevAtomic: false };
+            const empty = (block.textContent || '').trim() === '';
+            // Check if previous sibling block is atomic (image/embed)
+            const prevBlock = block.previousElementSibling?.closest?.('[data-block="true"]')
+              || block.parentElement?.previousElementSibling?.querySelector?.('[data-block="true"]');
+            const prevAtomic = prevBlock?.getAttribute('contenteditable') === 'false';
+            // Treat "no previous block" (first block) same as prevAtomic:
+            // Backspace on the first empty block in X Articles jumps focus to the title input.
+            const unsafe = !prevBlock || !!prevAtomic;
+            return { empty, prevAtomic: unsafe };
+          })()`,
+          returnByValue: true,
+        }, { sessionId });
+
+        if (emptyBlockInfo.result.value.empty && !emptyBlockInfo.result.value.prevAtomic) {
+          // Safe to remove — previous block is text, not atomic
+          await cdp.send('Input.dispatchKeyEvent', {
+            type: 'keyDown', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8,
+          }, { sessionId });
+          await cdp.send('Input.dispatchKeyEvent', {
+            type: 'keyUp', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8,
+          }, { sessionId });
+        }
+        // If prevAtomic, leave the empty block as a safe insertion point for the image paste
+
+        await sleep(500); // Let ContentState stabilize
+
+        // Verify placeholder was removed from ContentState
+        const placeholderDeleted = await cdp.send<{ result: { value: boolean } }>('Runtime.evaluate', {
+          expression: `(() => {
+            const editor = document.querySelector('.DraftEditor-editorContainer [data-contents="true"]');
+            if (!editor) return true;
+            const text = editor.innerText;
+            const placeholder = ${JSON.stringify(img.placeholder)};
+            const regex = new RegExp(placeholder + '(?!\\\\d)');
+            return !regex.test(text);
+          })()`,
+          returnByValue: true,
+        }, { sessionId });
+
+        if (!placeholderDeleted.result.value) {
+          console.warn(`[x-article] Placeholder still present after delete, retrying...`);
+          const reselected = await selectPlaceholder(2);
+          if (reselected) {
+            await cdp.send('Runtime.evaluate', {
+              expression: `(() => {
+                const editor = document.querySelector('.DraftEditor-editorContainer [contenteditable="true"]');
+                if (editor) editor.focus();
+              })()`,
+            }, { sessionId });
+            await sleep(300);
+            await cdp.send('Input.dispatchKeyEvent', {
+              type: 'keyDown', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8,
+            }, { sessionId });
+            await cdp.send('Input.dispatchKeyEvent', {
+              type: 'keyUp', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8,
+            }, { sessionId });
+            await sleep(500);
+          } else {
+            console.error(`[x-article] ❌ Could not reselect placeholder, skipping: ${img.placeholder}`);
+            continue;
+          }
+        }
+
+        // CRITICAL: Ensure editor has focus before pasting image.
+        // After deletion, cursor might be on an empty block. DraftJS needs
+        // the editor to be focused to correctly receive the paste event.
+        console.log(`[x-article] Ensuring editor focus before image paste...`);
+        await cdp.send('Runtime.evaluate', {
+          expression: `(() => {
+            const editor = document.querySelector('.DraftEditor-editorContainer [contenteditable="true"]');
+            if (editor) {
+              editor.focus();
+              // If cursor is on an empty block, collapse to start to ensure position is recorded
+              const sel = window.getSelection();
+              if (sel && sel.focusNode) {
+                let node = sel.focusNode;
+                if (node.nodeType === 3) node = node.parentElement;
+                const block = node?.closest?.('[data-block="true"]');
+                if (block && (block.textContent || '').trim() === '') {
+                  sel.collapseToStart();
+                }
+              }
+            }
+          })()`,
+        }, { sessionId });
+        await sleep(300);
+
+        console.log(`[x-article] Placeholder deleted. Pasting image at cursor...`);
+
+        // Step 2: Paste image at current cursor position
+        let pasteWorked = false;
+
+        // Method 1: Synthetic paste event via CDP (no window focus required)
+        console.log(`[x-article] Trying CDP synthetic paste (background-safe)...`);
+        const cdpPasteOk = await cdpPasteImage(cdp, sessionId, img.localPath);
+        if (cdpPasteOk) {
+          // Check if image appeared within 5s
+          const cdpCheckStart = Date.now();
+          while (Date.now() - cdpCheckStart < 5_000) {
+            const r = await cdp!.send<{ result: { value: number } }>('Runtime.evaluate', {
+              expression: `document.querySelectorAll('section[data-block="true"][contenteditable="false"] img[src^="blob:"]').length`,
+              returnByValue: true,
+            }, { sessionId });
+            if (r.result.value >= expectedImgCount) {
+              pasteWorked = true;
+              console.log(`[x-article] Image pasted via CDP: ${path.basename(img.localPath)}`);
+              break;
+            }
+            await sleep(500);
+          }
+        }
+
+        // Method 2: System clipboard + system paste fallback (requires Chrome in foreground)
+        if (!pasteWorked) {
+          console.log(`[x-article] CDP paste did not work, falling back to system paste...`);
+          if (!copyImageToClipboard(img.localPath)) {
+            console.warn(`[x-article] Failed to copy image to clipboard`);
+          } else {
+            await sleep(1000);
+            if (pasteFromClipboard('Google Chrome', 5, 1000)) {
+              console.log(`[x-article] Image pasted via system: ${path.basename(img.localPath)}`);
+            } else {
+              console.warn(`[x-article] Failed to paste image after retries`);
+            }
+          }
         }
 
         // Verify image appeared in editor
         console.log(`[x-article] Verifying image upload...`);
-        const expectedImgCount = imgCountBefore.result.value + 1;
-        let imgUploadOk = false;
-        const imgWaitStart = Date.now();
-        while (Date.now() - imgWaitStart < 15_000) {
-          const r = await cdp!.send<{ result: { value: number } }>('Runtime.evaluate', {
-            expression: `document.querySelectorAll('section[data-block="true"][contenteditable="false"] img[src^="blob:"]').length`,
-            returnByValue: true,
-          }, { sessionId });
-          if (r.result.value >= expectedImgCount) {
-            imgUploadOk = true;
-            break;
+        let imgUploadOk = pasteWorked;
+        if (!imgUploadOk) {
+          const imgWaitStart = Date.now();
+          while (Date.now() - imgWaitStart < 15_000) {
+            const r = await cdp!.send<{ result: { value: number } }>('Runtime.evaluate', {
+              expression: `document.querySelectorAll('section[data-block="true"][contenteditable="false"] img[src^="blob:"]').length`,
+              returnByValue: true,
+            }, { sessionId });
+            if (r.result.value >= expectedImgCount) {
+              imgUploadOk = true;
+              break;
+            }
+            await sleep(1000);
           }
-          await sleep(1000);
         }
 
         if (imgUploadOk) {
           console.log(`[x-article] Image upload verified (${expectedImgCount} image block(s))`);
-          // Wait for DraftEditor DOM to stabilize after image insertion
-          await sleep(3000);
         } else {
           console.warn(`[x-article] Image upload not detected after 15s`);
           if (i === 0) {
             console.error('[x-article] First image paste failed. Run check-paste-permissions.ts to diagnose.');
           }
         }
+
+        // Wait for DraftEditor DOM to stabilize before next image
+        await sleep(2000);
       }
 
       console.log('[x-article] All images processed.');
@@ -784,7 +880,9 @@ Options:
 Markdown frontmatter:
   ---
   title: My Article Title
+  标题: My Article Title (Chinese)
   cover_image: /path/to/cover.jpg
+  封面: /path/to/cover.jpg (Chinese)
   ---
 
 Example:

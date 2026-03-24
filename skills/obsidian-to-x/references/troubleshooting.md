@@ -7,7 +7,7 @@ Common issues and solutions for the obsidian-to-x skill.
 **Prevention (REQUIRED)**: Always clean Chrome CDP processes BEFORE executing any script:
 
 ```bash
-pkill -f "Chrome.*remote-debugging-port" 2>/dev/null; pkill -f "Chromium.*remote-debugging-port" 2>/dev/null; sleep 2
+pkill -f "Chrome.*remote-debugging-port"; pkill -f "Chromium.*remote-debugging-port"; sleep 2
 ```
 
 **Important**: This should be done automatically as the first step of every workflow — do not ask the user, just do it.
@@ -35,6 +35,24 @@ The script automatically verifies after all images are inserted:
 - Expected vs actual image count
 
 If the check fails (warnings in output), alert the user with the specific issues before they publish.
+
+## 脚本重复执行（Agent 后台任务导致）
+
+**症状**: 发布脚本被执行两次，Chrome 被启动两次，文章内容重复填入。
+
+**根本原因**: 使用了 Agent 工具的 `run_in_background=true` 模式。该模式的输出文件写入 `/private/tmp/`，被 vault 权限钩子拦截，导致 `TaskOutput` 报错 `No task found`。Agent 误判任务失败，随后用 Bash `&` 重新执行，造成两个进程并发。
+
+**修复**: 发布脚本一律使用 Bash 后台进程，日志重定向到 vault 内：
+
+```bash
+bun ${SKILL_DIR}/scripts/x-article.ts "file.md" > .temp/x-article-output.log 2>&1 &
+```
+
+然后用 `sleep N && cat .temp/x-article-output.log | tail -30` 轮询进度。
+
+**禁止**: 不要对发布脚本使用 `Agent run_in_background=true`。
+
+---
 
 ## Code Blocks Not Inserting
 

@@ -5,10 +5,12 @@ import process from 'node:process';
 import {
   CHROME_CANDIDATES_FULL,
   CdpConnection,
+  cdpPaste,
   copyImageToClipboard,
   findChromeExecutable,
   getDefaultProfileDir,
   getFreePort,
+  grantClipboardPermissions,
   pasteFromClipboard,
   sleep,
   waitForChromeDebugPort,
@@ -65,6 +67,9 @@ export async function postToX(options: XBrowserOptions): Promise<void> {
     await cdp.send('Page.enable', {}, { sessionId });
     await cdp.send('Runtime.enable', {}, { sessionId });
     await cdp.send('Input.setIgnoreInputEvents', { ignore: false }, { sessionId });
+
+    // Grant clipboard permissions so CDP paste works even when Chrome is in background
+    const clipboardGranted = await grantClipboardPermissions(cdp);
 
     console.log('[x-browser] Waiting for X editor...');
     await sleep(3000);
@@ -139,44 +144,74 @@ export async function postToX(options: XBrowserOptions): Promise<void> {
       }, { sessionId });
       await sleep(200);
 
-      // Use paste script (handles platform differences, activates Chrome)
+      // Paste image: try CDP paste first (works in background), fallback to system paste
       console.log('[x-browser] Pasting from clipboard...');
-      const pasteSuccess = pasteFromClipboard('Google Chrome', 5, 500);
 
-      if (!pasteSuccess) {
-        // Fallback to CDP (may not work for images on X)
-        console.log('[x-browser] Paste script failed, trying CDP fallback...');
-        const modifiers = process.platform === 'darwin' ? 4 : 2;
-        await cdp.send('Input.dispatchKeyEvent', {
-          type: 'keyDown',
-          key: 'v',
-          code: 'KeyV',
-          modifiers,
-          windowsVirtualKeyCode: 86,
-        }, { sessionId });
-        await cdp.send('Input.dispatchKeyEvent', {
-          type: 'keyUp',
-          key: 'v',
-          code: 'KeyV',
-          modifiers,
-          windowsVirtualKeyCode: 86,
-        }, { sessionId });
+      let pasteWorked = false;
+
+      // Method 1: CDP paste (no window focus required)
+      if (clipboardGranted) {
+        await cdpPaste(cdp, sessionId);
+        // Quick check: wait up to 5s for image to appear
+        const cdpCheckStart = Date.now();
+        while (Date.now() - cdpCheckStart < 5_000) {
+          const r = await cdp!.send<{ result: { value: number } }>('Runtime.evaluate', {
+            expression: `document.querySelectorAll('img[src^="blob:"]').length`,
+            returnByValue: true,
+          }, { sessionId });
+          if (r.result.value >= expectedImgCount) {
+            pasteWorked = true;
+            console.log(`[x-browser] Image pasted via CDP (background)`);
+            break;
+          }
+          await sleep(500);
+        }
+      }
+
+      // Method 2: System paste fallback (requires Chrome in foreground)
+      if (!pasteWorked) {
+        if (clipboardGranted) {
+          console.log('[x-browser] CDP paste did not work, falling back to system paste...');
+        }
+        const pasteSuccess = pasteFromClipboard('Google Chrome', 5, 500);
+
+        if (!pasteSuccess) {
+          // Last resort: CDP keyboard events
+          console.log('[x-browser] System paste failed, trying CDP keyboard fallback...');
+          const modifiers = process.platform === 'darwin' ? 4 : 2;
+          await cdp.send('Input.dispatchKeyEvent', {
+            type: 'keyDown',
+            key: 'v',
+            code: 'KeyV',
+            modifiers,
+            windowsVirtualKeyCode: 86,
+          }, { sessionId });
+          await cdp.send('Input.dispatchKeyEvent', {
+            type: 'keyUp',
+            key: 'v',
+            code: 'KeyV',
+            modifiers,
+            windowsVirtualKeyCode: 86,
+          }, { sessionId });
+        }
       }
 
       console.log('[x-browser] Verifying image upload...');
       const expectedImgCount = imgCountBefore.result.value + 1;
-      let imgUploadOk = false;
-      const imgWaitStart = Date.now();
-      while (Date.now() - imgWaitStart < 15_000) {
-        const r = await cdp!.send<{ result: { value: number } }>('Runtime.evaluate', {
-          expression: `document.querySelectorAll('img[src^="blob:"]').length`,
-          returnByValue: true,
-        }, { sessionId });
-        if (r.result.value >= expectedImgCount) {
-          imgUploadOk = true;
-          break;
+      let imgUploadOk = pasteWorked; // Skip re-check if CDP paste already verified
+      if (!imgUploadOk) {
+        const imgWaitStart = Date.now();
+        while (Date.now() - imgWaitStart < 15_000) {
+          const r = await cdp!.send<{ result: { value: number } }>('Runtime.evaluate', {
+            expression: `document.querySelectorAll('img[src^="blob:"]').length`,
+            returnByValue: true,
+          }, { sessionId });
+          if (r.result.value >= expectedImgCount) {
+            imgUploadOk = true;
+            break;
+          }
+          await sleep(1000);
         }
-        await sleep(1000);
       }
 
       if (imgUploadOk) {

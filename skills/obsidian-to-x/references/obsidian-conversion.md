@@ -11,17 +11,21 @@ Obsidian uses non-standard Markdown syntax that requires conversion before publi
 
 ## Solution: Automatic Conversion
 
-Use the conversion script to automatically convert Obsidian syntax:
+Obsidian syntax conversion is now built into `x-article.ts` via the `md-to-article.ts` module. No separate conversion step is needed -- just pass the Obsidian Markdown file directly:
 
 ```bash
-# Simple conversion (output to Temp/converted.md)
-${BUN_X} ${SKILL_DIR}/scripts/obsidian-to-article.ts Articles/your-article.md
+# Direct publish (x-article.ts handles Obsidian conversion internally)
+${BUN_X} ${SKILL_DIR}/scripts/x-article.ts Articles/your-article.md
+```
+
+For standalone conversion (debugging or inspection):
+
+```bash
+# Simple conversion (output to system temp)
+${BUN_X} ${SKILL_DIR}/scripts/md-to-article.ts Articles/your-article.md
 
 # Custom output path
-${BUN_X} ${SKILL_DIR}/scripts/obsidian-to-article.ts Articles/your-article.md Temp/custom.md
-
-# Then publish
-${BUN_X} ${SKILL_DIR}/scripts/x-article.ts Temp/converted.md
+${BUN_X} ${SKILL_DIR}/scripts/md-to-article.ts Articles/your-article.md /tmp/custom.md
 ```
 
 ## What Gets Converted
@@ -65,8 +69,8 @@ title: $TITLE
 # Step 5: Extract cover image path from frontmatter
 COVER=$(grep "^封面:" "$ORIGINAL_FILE" | sed 's/封面: "\[#[0-9]*\] !\[\[\(.*\)\]\]"/\1/' | sed "s|Attachments/|$PROJECT_ROOT/Attachments/|")
 
-# Step 6: Publish with converted file
-${BUN_X} ${SKILL_DIR}/scripts/x-article.ts "$CONVERTED_FILE" --cover "$COVER"
+# Step 6: Publish (x-article.ts handles Obsidian conversion internally)
+${BUN_X} ${SKILL_DIR}/scripts/x-article.ts "$ORIGINAL_FILE" --cover "$COVER"
 ```
 
 ## Simplified Version
@@ -86,7 +90,7 @@ sed -i '' '/^> \[#[0-9]*\] /d' Temp/converted.md
 sed -i '' '2a\
 title: Your Article Title' Temp/converted.md
 
-${BUN_X} ${SKILL_DIR}/scripts/x-article.ts Temp/converted.md --cover Attachments/cover.png
+${BUN_X} ${SKILL_DIR}/scripts/x-article.ts Articles/original.md --cover Attachments/cover.png
 ```
 
 ## When to Apply

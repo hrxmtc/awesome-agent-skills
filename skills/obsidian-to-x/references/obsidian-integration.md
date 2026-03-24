@@ -47,13 +47,11 @@ When the user says "publish current article" or "post this to X":
 
 **Step 1: Get active file path**
 ```bash
-# Method 1: Parse workspace.json (fast, 39x faster than CLI)
-ACTIVE_FILE=$(jq -r '.lastOpenFiles[0]' .obsidian/workspace.json 2>/dev/null)
+ACTIVE_FILE=$(obsidian file active)
 
-# Fallback: if jq fails or file not found, use Obsidian CLI
+# Fallback: if CLI fails, use workspace.json
 if [ -z "$ACTIVE_FILE" ] || [ ! -f "$ACTIVE_FILE" ]; then
-    echo "⚠️  workspace.json method failed, using Obsidian CLI fallback..."
-    ACTIVE_FILE=$(obsidian recents 2>&1 | grep -v "Loading\|installer" | head -1)
+    ACTIVE_FILE=$(jq -r '.lastOpenFiles[0]' .obsidian/workspace.json)
 fi
 
 # Validate file exists
@@ -67,16 +65,13 @@ echo "📄 Active file: $ACTIVE_FILE"
 
 **Step 2: Clean Chrome CDP processes**
 ```bash
-pkill -f "Chrome.*remote-debugging-port" 2>/dev/null; pkill -f "Chromium.*remote-debugging-port" 2>/dev/null; sleep 2
+pkill -f "Chrome.*remote-debugging-port"; pkill -f "Chromium.*remote-debugging-port"; sleep 2
 ```
 
-**Step 3: Convert and publish**
+**Step 3: Publish (x-article.ts handles Obsidian conversion internally)**
 ```bash
-# Convert Obsidian syntax to X format
-bun ${SKILL_DIR}/scripts/obsidian-to-article.ts "$ACTIVE_FILE" "Temp/converted.md"
-
-# Publish to X
-bun ${SKILL_DIR}/scripts/x-article.ts "Temp/converted.md"
+# Publish to X (Obsidian syntax converted automatically)
+bun ${SKILL_DIR}/scripts/x-article.ts "$ACTIVE_FILE"
 ```
 
 **One-command shortcut:**

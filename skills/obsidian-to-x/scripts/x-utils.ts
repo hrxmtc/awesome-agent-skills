@@ -239,6 +239,128 @@ export function getScriptDir(): string {
   return path.dirname(fileURLToPath(import.meta.url));
 }
 
+/**
+ * Grant clipboard read/write permissions to the page via CDP.
+ * This allows Chrome to access the system clipboard even when not focused,
+ * enabling background paste operations.
+ */
+export async function grantClipboardPermissions(cdp: CdpConnection, origin = 'https://x.com'): Promise<boolean> {
+  try {
+    await cdp.send('Browser.grantPermissions', {
+      permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
+      origin,
+    });
+    console.log('[cdp] Clipboard permissions granted');
+    return true;
+  } catch (e) {
+    console.warn('[cdp] Failed to grant clipboard permissions:', e instanceof Error ? e.message : String(e));
+    return false;
+  }
+}
+
+/**
+ * Send Cmd+V (macOS) or Ctrl+V (Linux/Win) via CDP Input.dispatchKeyEvent.
+ * Unlike system-level keystrokes (osascript), this does NOT require Chrome
+ * to be the focused/frontmost window — events are injected directly into
+ * the renderer process via the DevTools protocol.
+ *
+ * Prerequisite: call grantClipboardPermissions() once after CDP connect
+ * so the page can read the system clipboard in the background.
+ */
+export async function cdpPaste(cdp: CdpConnection, sessionId: string): Promise<void> {
+  const modifiers = process.platform === 'darwin' ? 4 : 2; // 4 = Meta (Cmd), 2 = Ctrl
+
+  // Use rawKeyDown which triggers Chrome's built-in shortcut handling (Cmd+V → paste)
+  await cdp.send('Input.dispatchKeyEvent', {
+    type: 'rawKeyDown',
+    key: 'v',
+    code: 'KeyV',
+    modifiers,
+    windowsVirtualKeyCode: 86,
+  }, { sessionId });
+  await cdp.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'v',
+    code: 'KeyV',
+    modifiers,
+    windowsVirtualKeyCode: 86,
+  }, { sessionId });
+}
+
+/**
+ * Paste an image into a contenteditable editor via synthetic ClipboardEvent.
+ * This reads the image file, converts it to base64, passes it into the page
+ * context via CDP Runtime.evaluate, constructs a File + DataTransfer, and
+ * dispatches a synthetic 'paste' event on the editor.
+ *
+ * This approach does NOT require window focus — it works entirely within
+ * the page's JavaScript context via CDP.
+ *
+ * @param editorSelector - CSS selector for the contenteditable element
+ * @returns true if the paste event was dispatched successfully
+ */
+export async function cdpPasteImage(
+  cdp: CdpConnection,
+  sessionId: string,
+  imagePath: string,
+  editorSelector = '.DraftEditor-editorContainer [contenteditable="true"]',
+): Promise<boolean> {
+  const imageBuffer = fs.readFileSync(imagePath);
+  const base64 = imageBuffer.toString('base64');
+  const ext = path.extname(imagePath).toLowerCase();
+  const mimeType = ext === '.png' ? 'image/png'
+    : ext === '.webp' ? 'image/webp'
+    : ext === '.gif' ? 'image/gif'
+    : 'image/jpeg';
+  const fileName = path.basename(imagePath);
+
+  try {
+    const result = await cdp.send<{ result: { value: boolean } }>('Runtime.evaluate', {
+      expression: `(async () => {
+        const editor = document.querySelector(${JSON.stringify(editorSelector)});
+        if (!editor) return false;
+        // Only focus if editor is not already focused (preserve existing selection for paste-to-replace)
+        if (document.activeElement !== editor) {
+          editor.focus();
+        }
+
+        // Decode base64 to binary
+        const base64 = ${JSON.stringify(base64)};
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+
+        // Create File object
+        const blob = new Blob([bytes], { type: ${JSON.stringify(mimeType)} });
+        const file = new File([blob], ${JSON.stringify(fileName)}, { type: ${JSON.stringify(mimeType)} });
+
+        // Build DataTransfer with the file
+        const dt = new DataTransfer();
+        dt.items.add(file);
+
+        // Dispatch synthetic paste event
+        const pasteEvent = new ClipboardEvent('paste', {
+          bubbles: true,
+          cancelable: true,
+          clipboardData: dt,
+        });
+
+        editor.dispatchEvent(pasteEvent);
+        return true;
+      })()`,
+      awaitPromise: true,
+      returnByValue: true,
+    }, { sessionId });
+
+    return result.result.value === true;
+  } catch (e) {
+    console.warn('[cdp] cdpPasteImage failed:', e instanceof Error ? e.message : String(e));
+    return false;
+  }
+}
+
 function runBunScript(scriptPath: string, args: string[]): boolean {
   const result = spawnSync('npx', ['-y', 'bun', scriptPath, ...args], { stdio: 'inherit' });
   return result.status === 0;

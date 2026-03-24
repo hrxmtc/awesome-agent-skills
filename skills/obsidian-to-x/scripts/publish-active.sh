@@ -14,22 +14,22 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}[1/4] Getting active file from Obsidian...${NC}"
+echo -e "${GREEN}[1/3] Getting active file from Obsidian...${NC}"
 
 # Get vault root (current directory should be the vault)
 VAULT_ROOT="$(pwd)"
 
-# Method 1: Parse workspace.json (fast, 39x faster than CLI)
-if command -v jq &> /dev/null && [ -f "$VAULT_ROOT/.obsidian/workspace.json" ]; then
-    ACTIVE_FILE=$(jq -r '.lastOpenFiles[0]' "$VAULT_ROOT/.obsidian/workspace.json" 2>/dev/null)
+# Method 1: Obsidian CLI (primary)
+if command -v obsidian &> /dev/null; then
+    ACTIVE_FILE=$(obsidian file active)
 fi
 
-# Fallback: use Obsidian CLI if workspace.json fails
+# Fallback: parse workspace.json
 if [ -z "$ACTIVE_FILE" ] || [ ! -f "$VAULT_ROOT/$ACTIVE_FILE" ]; then
-    echo -e "${YELLOW}⚠️  workspace.json method failed, using Obsidian CLI fallback...${NC}"
+    echo -e "${YELLOW}⚠️  Obsidian CLI failed, using workspace.json fallback...${NC}"
 
-    if command -v obsidian &> /dev/null; then
-        ACTIVE_FILE=$(obsidian recents 2>&1 | grep -v "Loading\|installer" | head -1)
+    if command -v jq &> /dev/null && [ -f "$VAULT_ROOT/.obsidian/workspace.json" ]; then
+        ACTIVE_FILE=$(jq -r '.lastOpenFiles[0]' "$VAULT_ROOT/.obsidian/workspace.json")
     fi
 fi
 
@@ -54,16 +54,12 @@ if [ ! -f "$FULL_PATH" ]; then
     exit 1
 fi
 
-echo -e "${GREEN}[2/4] Cleaning Chrome CDP processes...${NC}"
-pkill -f "Chrome.*remote-debugging-port" 2>/dev/null || true
-pkill -f "Chromium.*remote-debugging-port" 2>/dev/null || true
+echo -e "${GREEN}[2/3] Cleaning Chrome CDP processes...${NC}"
+pkill -f "Chrome.*remote-debugging-port" || true
+pkill -f "Chromium.*remote-debugging-port" || true
 sleep 2
 
-echo -e "${GREEN}[3/4] Converting Obsidian syntax to X format...${NC}"
-mkdir -p "$VAULT_ROOT/Temp"
-bun "$SKILL_DIR/scripts/obsidian-to-article.ts" "$ACTIVE_FILE" "$VAULT_ROOT/Temp/converted.md"
-
-echo -e "${GREEN}[4/4] Publishing to X Articles...${NC}"
-bun "$SKILL_DIR/scripts/x-article.ts" "$VAULT_ROOT/Temp/converted.md"
+echo -e "${GREEN}[3/3] Publishing to X Articles...${NC}"
+bun "$SKILL_DIR/scripts/x-article.ts" "$ACTIVE_FILE"
 
 echo -e "${GREEN}✅ Done! Review and publish in the browser window.${NC}"
