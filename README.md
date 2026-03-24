@@ -187,6 +187,13 @@ skillhub upgrade # 升级已安装的技能
 <td><a href="https://github.com/browser-use/browser-use">browser-use</a></td>
 <td><a href="https://github.com/firecrawl/cli">firecrawl</a></td>
 </tr>
+<tr>
+<td><a href="https://github.com/greensock/gsap-skills">gsap</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
 <tr><th colspan="5">📝 内容与协作</th></tr>
 <tr>
 <td><a href="https://github.com/makenotion/skills">notion</a></td>

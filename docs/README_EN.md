@@ -186,6 +186,13 @@ skillhub upgrade                  # Upgrade installed skills
 <td><a href="https://github.com/browser-use/browser-use/tree/main/skills">browser-use</a></td>
 <td><a href="https://github.com/firecrawl/cli">firecrawl</a></td>
 </tr>
+<tr>
+<td><a href="https://github.com/greensock/gsap-skills">gsap</a></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
 <tr><th colspan="5">📝 Content & Collaboration</th></tr>
 <tr>
 <td><a href="https://github.com/makenotion/skills">notion</a></td>
