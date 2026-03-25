@@ -204,7 +204,7 @@ skillhub upgrade                  # Upgrade installed skills
 <tr>
 <td><a href="https://github.com/hardhackerlabs/podwise-cli">podwise-cli</a></td>
 <td><a href="https://github.com/wpsnote/wpsnote-skills">wps</a></td>
-<td></td>
+<td><a href="https://github.com/marswaveai/skills">listenhub</a></td>
 <td></td>
 <td></td>
 </tr>
